@@ -1,4 +1,7 @@
 .expo/
 Frontend/node_modules/
 Frontend/.env
+.env
+node_modules
+dist
         

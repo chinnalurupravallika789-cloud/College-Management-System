@@ -22,6 +22,8 @@ VITE_USE_DEV_PROXY=true
 
 When `VITE_USE_DEV_PROXY=true`, the browser calls `/api/...` and Vite proxies requests to `VITE_API_BASE_URL`. Restart `npm run dev` after changing `.env` or `vite.config.js`.
 
+Every developer must create a local `.env` file inside the `Frontend` folder by copying `.env.example`. After changing `.env` or `vite.config.js`, restart `npm run dev`.
+
 ## Commands
 
 ```bash

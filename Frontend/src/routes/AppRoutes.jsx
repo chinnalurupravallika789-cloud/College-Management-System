@@ -10,6 +10,7 @@ import MarksEntryPage from "@/components/pages/MarksEntryPage.jsx";
 import ResultsPage from "@/components/pages/ResultsPage.jsx";
 import PromotionPage from "@/components/pages/PromotionPage.jsx";
 import ReportsPage from "@/components/pages/ReportsPage.jsx";
+import CertificatesPage from "@/components/pages/CertificatesPage.jsx";
 import StudentProfilePage from "@/components/pages/StudentProfilePage.jsx";
 import Login from "@/features/auth/pages/Login.jsx";
 import Register from "@/features/auth/pages/Register.jsx";
@@ -20,7 +21,7 @@ import StudentDashboard from "@/Dashboard/StudentDashboard/StudentDashboard.jsx"
 import ProtectedRoute, { PublicOnlyRoute } from "./ProtectedRoute.jsx";
 import { modules } from "@/config/modules.js";
 
-const listSlugs = ["boards", "academic-years", "courses", "subjects", "sections", "faculty", "faculty-allocation", "assignments", "examinations", "fee-structure", "certificates", "students"];
+const listSlugs = ["boards", "academic-years", "courses", "subjects", "sections", "faculty", "faculty-allocation", "assignments", "examinations", "fee-structure", "students"];
 
 function ModuleListRoute({ slug }) {
   if (!modules[slug]) return <Navigate to="/dashboard" replace />;
@@ -63,6 +64,7 @@ export default function AppRoutes() {
         <Route path="/dashboard/marks-entry" element={<MarksEntryPage />} />
         <Route path="/dashboard/results" element={<ResultsPage />} />
         <Route path="/dashboard/promotion" element={<PromotionPage />} />
+        <Route path="/dashboard/certificates" element={<CertificatesPage />} />
         <Route path="/dashboard/reports" element={<ReportsPage />} />
         <Route path="/dashboard/students/:id" element={<StudentProfileRoute />} />
       </Route>
@@ -80,6 +82,7 @@ export default function AppRoutes() {
       <Route path="/marks-entry" element={<Navigate to="/dashboard/marks-entry" replace />} />
       <Route path="/results" element={<Navigate to="/dashboard/results" replace />} />
       <Route path="/promotion" element={<Navigate to="/dashboard/promotion" replace />} />
+      <Route path="/certificates" element={<Navigate to="/dashboard/certificates" replace />} />
       <Route path="/reports" element={<Navigate to="/dashboard/reports" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
