@@ -1,0 +1,9 @@
+{
+  "name": "college-management-system-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix Frontend run dev",
+    "build": "npm --prefix Frontend run build",
+    "lint": "npm --prefix Frontend run lint"
+  }
+}

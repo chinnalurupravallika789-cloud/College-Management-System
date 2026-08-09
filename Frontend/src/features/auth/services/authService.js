@@ -1,22 +1,15 @@
 import apiClient from "@/api/axios.js";
 import { apiEndpoints } from "@/api/apiEndpoints.js";
 
-const ADMIN_LOGIN_EMAIL = "admin@cms.com";
-
 function logLoginDebug(stage, details) {
   if (!import.meta.env.DEV) return;
   // Never log password values.
   console.info("[auth-login]", stage, details);
 }
 
-export const adminLogin = (data) =>
-  apiClient.post(apiEndpoints.admin.login, {
-    email: data.email,
-    password: data.password,
-  });
-
 export const userLogin = (data) =>
   apiClient.post(apiEndpoints.auth.login, {
+    EmailOrMobile: data.emailOrMobile,
     emailOrMobile: data.emailOrMobile,
     password: data.password,
   });
@@ -24,34 +17,11 @@ export const userLogin = (data) =>
 export const loginUser = async (data) => {
   const enteredIdentity = String(data.emailOrMobile || "").trim();
   const enteredPassword = String(data.password || "").trim();
-  const identityForCheck = enteredIdentity.toLowerCase().replace(/\s+/g, "");
-  const isAdminLogin = identityForCheck === ADMIN_LOGIN_EMAIL;
 
   logLoginDebug("request-prepared", {
-    endpoint: isAdminLogin ? apiEndpoints.admin.login : apiEndpoints.auth.login,
-    payload: isAdminLogin
-      ? { email: enteredIdentity, password: "***" }
-      : { emailOrMobile: enteredIdentity, password: "***" },
+    endpoint: apiEndpoints.auth.login,
+    payload: { emailOrMobile: enteredIdentity, password: "***" },
   });
-
-  if (isAdminLogin) {
-    try {
-      const adminResponse = await adminLogin({ email: enteredIdentity, password: enteredPassword });
-      logLoginDebug("response-received", {
-        endpoint: apiEndpoints.admin.login,
-        httpStatus: adminResponse?.status,
-        responseStatus: adminResponse?.data?.status ?? adminResponse?.data?.Status,
-      });
-      return normalizeLoginResponse(adminResponse.data, enteredIdentity, "admin");
-    } catch (adminError) {
-      logLoginDebug("response-error", {
-        endpoint: apiEndpoints.admin.login,
-        httpStatus: adminError?.response?.status,
-        message: getBackendMessage(adminError),
-      });
-      throw buildLoginError(adminError, "admin");
-    }
-  }
 
   try {
     const userResponse = await userLogin({
@@ -63,14 +33,14 @@ export const loginUser = async (data) => {
       httpStatus: userResponse?.status,
       responseStatus: userResponse?.data?.status ?? userResponse?.data?.Status,
     });
-    return normalizeLoginResponse(userResponse.data, enteredIdentity, "student");
+    return normalizeLoginResponse(userResponse.data, enteredIdentity);
   } catch (userError) {
     logLoginDebug("response-error", {
       endpoint: apiEndpoints.auth.login,
       httpStatus: userError?.response?.status,
       message: getBackendMessage(userError),
     });
-    throw buildLoginError(userError, "user");
+    throw buildLoginError(userError);
   }
 };
 
@@ -81,7 +51,7 @@ export const resetPassword = (data) => apiClient.post(apiEndpoints.auth.resetPas
 export const getUsers = () => apiClient.get(apiEndpoints.auth.users);
 export const getUserById = (id) => apiClient.get(apiEndpoints.auth.userById(id));
 
-function normalizeLoginResponse(payload = {}, enteredEmail, fallbackRole) {
+function normalizeLoginResponse(payload = {}, enteredEmail) {
   const data = payload.data || payload.Data || payload;
   const status = payload.status ?? payload.Status ?? data.status ?? data.Status;
   const message = payload.message || payload.Message || data.message || data.Message || "Login successful.";
@@ -100,8 +70,9 @@ function normalizeLoginResponse(payload = {}, enteredEmail, fallbackRole) {
     data.token ||
     data.jwt;
 
-  const role = fallbackRole === "admin" ? "admin" : data.Role || data.role || payload.Role || payload.role || "student";
-  const isAdmin = role === "admin" || fallbackRole === "admin";
+  const rawRole = data.Role || data.role || payload.Role || payload.role || "student";
+  const role = String(rawRole).trim().toLowerCase();
+  const isAdmin = role === "admin";
   const user = isAdmin
     ? {
         id: data.id || data.adminId || data.AdminId || data.UserId || payload.id || payload.UserId,
@@ -121,14 +92,10 @@ function normalizeLoginResponse(payload = {}, enteredEmail, fallbackRole) {
   return { token, user, roleType: isAdmin ? "admin" : "student", message };
 }
 
-function buildLoginError(error, loginType) {
+function buildLoginError(error) {
   const statusCode = error?.response?.status;
 
-  if (loginType === "admin" && statusCode === 500) {
-    return new Error("Admin login API failed on server. Please check backend /api/Admin/login request body or server logs.");
-  }
-
-  if (loginType === "user" && statusCode === 401) {
+  if (statusCode === 401) {
     return new Error("Invalid email/mobile or password.");
   }
 

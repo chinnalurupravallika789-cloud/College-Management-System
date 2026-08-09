@@ -4,7 +4,7 @@ import path from "node:path";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
-  const apiBaseUrl = env.VITE_API_BASE_URL || "https://heroics-ambush-baton.ngrok-free.dev";
+  const apiBaseUrl = env.VITE_API_BASE_URL || "http://localhost:5167";
 
   return {
     plugins: [react()],

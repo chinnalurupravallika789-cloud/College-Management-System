@@ -96,7 +96,6 @@ body {
     transition: none !important;
   }
 }
-<<<<<<< HEAD
 .cms-landing-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .cms-landing-brand strong { display: block; font-size: 15px; }
 .cms-landing-brand span { font-size: 10.5px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--cms-muted); }
@@ -959,5 +958,3 @@ body {
 }
 
 
-=======
->>>>>>> 65ab0674b433db586d8cebf29be4b1b954231274

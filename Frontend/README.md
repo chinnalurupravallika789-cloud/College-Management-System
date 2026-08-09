@@ -16,9 +16,11 @@ React + Vite frontend for the Pirnav Junior College Management System. This vers
 Create one local `.env` file using `.env.example`:
 
 ```env
-VITE_API_BASE_URL=https://heroics-ambush-baton.ngrok-free.dev
+VITE_API_BASE_URL=http://localhost:5167
 VITE_USE_DEV_PROXY=true
 ```
+
+If you need to use an ngrok tunnel, override `VITE_API_BASE_URL` in your local `.env` with the active tunnel URL.
 
 When `VITE_USE_DEV_PROXY=true`, the browser calls `/api/...` and Vite proxies requests to `VITE_API_BASE_URL`. Restart `npm run dev` after changing `.env` or `vite.config.js`.
 
