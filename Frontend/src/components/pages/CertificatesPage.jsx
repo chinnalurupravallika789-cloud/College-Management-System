@@ -4,6 +4,7 @@ import { BadgeCheck, Ban, FileCheck2, FilePenLine, Printer, RotateCcw, Search, S
 import DashboardLayout from "@/components/layout/DashboardLayout.jsx";
 import { Field, Toast } from "@/components/common/Ui.jsx";
 import { academicYears, certificates as seedCertificates, options, students } from "@/data/mockData.js";
+import "./CertificatesPage.css";
 
 const PAGE_SIZE = 5;
 const CERT_STORAGE_KEY = "cms.certificates.rows.v1";
@@ -182,28 +183,11 @@ function getCertificateTemplate(type, record) {
   }
 }
 
-function buildPrintHtml(record) {
-  const certificateNo = escapeHtml(record.number);
-  const student = escapeHtml(record.student);
-  const template = getCertificateTemplate(record.type, record);
-  const templateHeading = escapeHtml(template.heading);
-  const templateParaOne = escapeHtml(template.paragraphOne);
-  const templateParaTwo = escapeHtml(template.paragraphTwo);
-  const requestDate = escapeHtml(formatDateDdMmYyyy(record.requestDate));
-  const issueDate = escapeHtml(formatDateDdMmYyyy(record.issue));
-  const status = escapeHtml(record.status || "Draft");
-  const remarks = record.remarks ? `<p><strong>Remarks:</strong> ${escapeHtml(record.remarks)}</p>` : "";
-
-  return `<!doctype html>
-<html>
-<head>
-<meta charset="UTF-8" />
-<title>Certificate ${certificateNo}</title>
-<style>
+const CERTIFICATE_PRINT_CSS = `
   @page { size: A4 portrait; margin: 14mm; }
   body {
     margin: 0;
-    font-family: 'Times New Roman', Georgia, serif;
+    font-family: "Times New Roman", Georgia, serif;
     background: #eef3fb;
     color: #18253f;
   }
@@ -362,7 +346,26 @@ function buildPrintHtml(record) {
       break-inside: avoid;
     }
   }
-</style>
+`;
+
+function buildPrintHtml(record) {
+  const certificateNo = escapeHtml(record.number);
+  const student = escapeHtml(record.student);
+  const template = getCertificateTemplate(record.type, record);
+  const templateHeading = escapeHtml(template.heading);
+  const templateParaOne = escapeHtml(template.paragraphOne);
+  const templateParaTwo = escapeHtml(template.paragraphTwo);
+  const requestDate = escapeHtml(formatDateDdMmYyyy(record.requestDate));
+  const issueDate = escapeHtml(formatDateDdMmYyyy(record.issue));
+  const status = escapeHtml(record.status || "Draft");
+  const remarks = record.remarks ? `<p><strong>Remarks:</strong> ${escapeHtml(record.remarks)}</p>` : "";
+
+  return `<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>Certificate ${certificateNo}</title>
+<style>${CERTIFICATE_PRINT_CSS}</style>
 </head>
 <body>
   <div class="page">
@@ -725,7 +728,7 @@ export default function CertificatesPage() {
       subtitle="Generate, review, issue, and print certificates with a real-time preview."
       breadcrumb={["Administration"]}
     >
-      <div style={{ marginBottom: 16 }}>
+      <div className="cert-section-gap">
         <div className="cms-card cert-form-card">
           <div className="cms-card-head cert-section-head">
             <div>
@@ -763,7 +766,7 @@ export default function CertificatesPage() {
               ))}
             </div>
 
-            <div className="cms-form-grid cert-student-fields" style={{ marginTop: 12 }}>
+            <div className="cms-form-grid cert-student-fields cert-space-top-12">
               <div className="cms-field">
                 <label>Student Name</label>
                 <input type="text" value={form.student} readOnly placeholder="Auto-filled from admission number" />
@@ -826,7 +829,7 @@ export default function CertificatesPage() {
                 <th>Request Date</th>
                 <th>Issue Date</th>
                 <th>Status</th>
-                <th style={{ textAlign: "right" }}>Actions</th>
+                <th className="cert-actions-header">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -843,7 +846,7 @@ export default function CertificatesPage() {
                   <td>{formatDateDdMmYyyy(row.issue)}</td>
                   <td><span className={`cert-status-pill ${certStatusClass(row.status)}`}>{row.status}</span></td>
                   <td>
-                    <div className="cms-actions" style={{ justifyContent: "flex-end" }}>
+                    <div className="cms-actions cert-actions-right">
                       <button
                         className="cert-step-btn"
                         type="button"
@@ -1004,7 +1007,7 @@ export default function CertificatesPage() {
             </div>
 
             <div className="cms-modal-body">
-              <div className="cms-form-grid cols-2" style={{ marginBottom: 12 }}>
+              <div className="cms-form-grid cols-2 cert-space-bottom-12">
                 <div className={`cms-field ${editErrors.admissionNo ? "has-error" : ""}`}>
                   <label>Admission No.</label>
                   <select
@@ -1058,7 +1061,7 @@ export default function CertificatesPage() {
                 {editErrors.purpose ? <small className="cms-error">{editErrors.purpose}</small> : null}
               </div>
 
-              <div className="cms-field" style={{ marginTop: 12 }}>
+              <div className="cms-field cert-space-top-12">
                 <label>Remarks</label>
                 <input
                   type="text"
